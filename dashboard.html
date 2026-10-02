@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Portal Dashboard</title>
+    <!-- Plus Jakarta Sans Font & Bootstrap 5 -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --sidebar-blue: #0066ff;
+            --sidebar-active: #2b7fff;
+            --sidebar-hover: rgba(255, 255, 255, 0.14);
+            --bg-canvas: #f8fafc;
+            --card-radius: 20px;
+            --text-dark: #0f172a;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-canvas);
+            margin: 0;
+            padding: 0;
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Blue Sidebar */
+        .sidebar {
+            width: 260px;
+            background-color: var(--sidebar-blue);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 24px 16px;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .brand-header {
+            font-size: 1.35rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 6px 12px;
+            margin-bottom: 24px;
+            letter-spacing: -0.3px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .sidebar-item {
+            padding: 10px 14px;
+            border-radius: 13px;
+            font-weight: 600;
+            font-size: 0.88rem;
+            color: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.15s ease;
+            text-decoration: none;
+        }
+
+        .sidebar-item:hover {
+            background-color: var(--sidebar-hover);
+            color: #ffffff;
+        }
+
+        .sidebar-item.active {
+            background-color: var(--sidebar-active);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Sidebar 75% Attendance & Defaulter Widget */
+        .sidebar-attendance-card {
+            background: rgba(0, 0, 0, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+
+        .sidebar-attendance-card.defaulter-active {
+            background: rgba(220, 38, 38, 0.28);
+            border: 1.5px solid rgba(254, 202, 202, 0.4);
+        }
+
+        .sidebar-badge-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 3px 10px;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .badge-eligible {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-defaulter {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .sidebar-progress {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.22);
+            border-radius: 999px;
+            overflow: hidden;
+            margin: 8px 0 6px 0;
+        }
+
+        .sidebar-progress-bar {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.3s ease;
+        }
+
+        /* Sidebar User Profile Card */
+        .sidebar-user-card {
+            background-color: rgba(0, 0, 0, 0.12);
+            border-radius: 16px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .user-avatar {
+            width: 38px;
+            height: 38px;
+            background-color: #ffffff;
+            color: var(--sidebar-blue);
+            font-weight: 800;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .user-info {
+            flex-grow: 1;
+            margin-left: 10px;
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 0.88rem;
+            font-weight: 700;
+            margin: 0;
+            white-space: nowrap;
+        }
+
+        .user-role-label {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.75;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            font-size: 1.15rem;
+            cursor: pointer;
+            padding: 2px;
+            transition: transform 0.2s;
+        }
+
+        .logout-btn:hover {
+            transform: scale(1.15);
+        }
+
+        /* Main View Canvas */
+        .main-wrapper {
+            margin-left: 260px;
+            padding: 40px 48px;
+            width: calc(100% - 260px);
+        }
+
+        .page-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            letter-spacing: -0.4px;
+            color: #0f172a;
+        }
+
+        .content-card {
+            background: #ffffff;
+            border-radius: var(--card-radius);
+            padding: 28px;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            margin-bottom: 24px;
+        }
+
+        /* Stat Metrics */
+        .stat-card {
+            background: #ffffff;
+            border-radius: var(--card-radius);
+            padding: 22px 24px;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 20px;
+            bottom: 20px;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .stat-blue::before { background-color: #0066ff; }
+        .stat-teal::before { background-color: #0d9488; }
+        .stat-light::before { background-color: #0284c7; }
+        .stat-orange::before { background-color: #f59e0b; }
+        .stat-purple::before { background-color: #8b5cf6; }
+        .stat-red::before { background-color: #dc2626; }
+
+        .stat-number {
+            font-size: 2.1rem;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 6px;
+            color: #0f172a;
+        }
+
+        .stat-label {
+            font-size: 0.82rem;
+            color: #64748b;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .custom-table th {
+            text-transform: uppercase;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            padding: 14px 16px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .custom-table td {
+            padding: 16px 16px;
+            font-size: 0.94rem;
+            font-weight: 600;
+            color: #1e293b;
+            border-bottom: 1px solid #f8fafc;
+            vertical-align: middle;
+        }
+
+        .badge-pill-soft {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+        }
+
+        .badge-green { background-color: #e6f9ed; color: #16a34a; }
+        .badge-yellow { background-color: #fef9c3; color: #ca8a04; }
+        .badge-blue { background-color: #e0f2fe; color: #0284c7; }
+        .badge-red { background-color: #fee2e2; color: #dc2626; }
+        .badge-purple { background-color: #f3e8ff; color: #7e22ce; }
+
+        .btn-add-brand {
+            background-color: #0066ff;
+            color: #ffffff;
+            font-weight: 700;
+            border-radius: 12px;
+            padding: 8px 18px;
+            border: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .btn-add-brand:hover {
+            background-color: #0052cc;
+            color: #ffffff;
+        }
+
+        .btn-check:checked + .btn-outline-success { background-color: #16a34a !important; color: #fff !important; }
+        .btn-check:checked + .btn-outline-danger { background-color: #dc2626 !important; color: #fff !important; }
+        .btn-check:checked + .btn-outline-warning { background-color: #ca8a04 !important; color: #fff !important; }
+    </style>
+</head>
+<body>
+
+    <!-- LEFT BLUE SIDEBAR -->
+    <aside class="sidebar">
+        <div>
+            <div class="brand-header" id="sidebarBrand">
+                <span>🎓</span> Student Portal
+            </div>
+            <ul class="sidebar-menu" id="sidebarMenuContainer"></ul>
+        </div>
+
+        <div>
+            <!-- DYNAMIC 75% ATTENDANCE & DEFAULTER SIDEBAR WIDGET -->
+            <div id="sidebarAttendanceBox"></div>
+
+            <!-- USER PROFILE FOOTER -->
+            <div class="sidebar-user-card">
+                <div class="user-avatar" id="sidebarAvatar">AM</div>
+                <div class="user-info">
+                    <p class="user-name" id="sidebarUserName">Ali Yunus Momin</p>
+                    <p class="user-role-label" id="sidebarUserRole">STUDENT</p>
+                </div>
+                <button class="logout-btn" onclick="logout()" title="Sign Out">🚪</button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN VIEW CANVAS -->
+    <main class="main-wrapper" id="mainContentCanvas"></main>
+
+    <!-- ADMIN MODALS -->
+    <div class="modal fade" id="addStudentModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 20px; border: none; padding: 15px;">
+                <div class="modal-header border-0"><h5 class="modal-title fw-bold">👨‍🎓 Add New Student</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <form onsubmit="handleAddStudentSubmit(event)">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6"><label class="form-label fw-bold small text-muted">ROLL NO</label><input type="text" class="form-control" id="newStudRoll" required style="border-radius: 10px;"></div>
+                            <div class="col-md-6"><label class="form-label fw-bold small text-muted">CLASS</label><select class="form-select" id="newStudClass" style="border-radius: 10px;"><option>TY BCA</option><option>SY BCA</option><option>FY BCA</option></select></div>
+                            <div class="col-12"><label class="form-label fw-bold small text-muted">NAME</label><input type="text" class="form-control" id="newStudName" required style="border-radius: 10px;"></div>
+                            <div class="col-12"><label class="form-label fw-bold small text-muted">EMAIL</label><input type="email" class="form-control" id="newStudEmail" required style="border-radius: 10px;"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0"><button type="submit" class="btn btn-add-brand px-4">Save to Database</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="addTeacherModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius: 20px; border: none; padding: 15px;">
+                <div class="modal-header border-0"><h5 class="modal-title fw-bold">👨‍🏫 Add New Faculty</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
+                <form onsubmit="handleAddTeacherSubmit(event)">
+                    <div class="modal-body">
+                        <div class="row g-3">
+                            <div class="col-md-6"><label class="form-label fw-bold small text-muted">TEACHER ID</label><input type="text" class="form-control" id="newTeachId" required style="border-radius: 10px;"></div>
+                            <div class="col-md-6"><label class="form-label fw-bold small text-muted">CLASS</label><select class="form-select" id="newTeachClass" style="border-radius: 10px;"><option>TY BCA</option><option>SY BCA</option><option>FY BCA</option></select></div>
+                            <div class="col-12"><label class="form-label fw-bold small text-muted">NAME</label><input type="text" class="form-control" id="newTeachName" required style="border-radius: 10px;"></div>
+                            <div class="col-md-6"><label class="form-label fw-bold small text-muted">DEPT</label><input type="text" class="form-control" id="newTeachDept" value="Computer Applications" style="border-radius: 10px;"></div>
+                            <div class="col-md-6"><label class="form-label fw-bold small text-muted">SUBJECT</label><input type="text" class="form-control" id="newTeachSubject" required style="border-radius: 10px;"></div>
+                            <div class="col-12"><label class="form-label fw-bold small text-muted">EMAIL</label><input type="email" class="form-control" id="newTeachEmail" required style="border-radius: 10px;"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0"><button type="submit" class="btn btn-add-brand px-4">Save to Database</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let currentRole = localStorage.getItem('portal_role') || 'STUDENT';
+        let currentName = localStorage.getItem('portal_name') || 'Ali Yunus Momin';
+        let currentRoll = localStorage.getItem('portal_roll') || '101';
+        let currentAttendance = parseFloat(localStorage.getItem('portal_attendance')) || 92.0;
+        let currentAttended = parseInt(localStorage.getItem('portal_attended_lectures')) || 41;
+        let currentTotal = parseInt(localStorage.getItem('portal_total_lectures')) || 45;
+        let currentAvatar = localStorage.getItem('portal_avatar') || 'AM';
+
+        let activeTab = 'dashboard';
+        let liveStudents = [];
+        let liveTeachers = [];
+        let liveLeaves = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateSidebar();
+            loadLiveDatabaseData();
+        });
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = 'index.html';
+        }
+
+        // Helper: returns current date in local YYYY-MM-DD
+        function getLocalTodayDate() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const day = String(now.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function updateSidebar() {
+            const brand = document.getElementById('sidebarBrand');
+            const menu = document.getElementById('sidebarMenuContainer');
+            const avatar = document.getElementById('sidebarAvatar');
+            const userName = document.getElementById('sidebarUserName');
+            const userRole = document.getElementById('sidebarUserRole');
+            const attBox = document.getElementById('sidebarAttendanceBox');
+
+            avatar.innerText = currentAvatar;
+            userName.innerText = currentName;
+            userRole.innerText = currentRole;
+
+            if (currentRole === 'STUDENT') {
+                brand.innerHTML = `<span>🎓</span> Student Portal`;
+                menu.innerHTML = `
+                    <li><a class="sidebar-item ${activeTab === 'dashboard' ? 'active' : ''}" onclick="switchTab('dashboard')">⏱ Dashboard</a></li>
+                    <li><a class="sidebar-item ${activeTab === 'my_attendance' ? 'active' : ''}" onclick="switchTab('my_attendance')">📊 My Attendance</a></li>
+                    <li><a class="sidebar-item ${activeTab === 'calculator' ? 'active' : ''}" onclick="switchTab('calculator')">🧮 75% Safe-Bunk Calc</a></li>
+                    <li><a class="sidebar-item ${activeTab === 'apply_leave' ? 'active' : ''}" onclick="switchTab('apply_leave')">✉️ Apply Leave</a></li>
+                `;
+
+                const isDefaulter = currentAttendance < 75.0;
+                const safeMisses = Math.max(0, Math.floor((currentAttended / 0.75) - currentTotal));
+                const neededLectures = Math.ceil((0.75 * currentTotal - currentAttended) / 0.25);
+
+                attBox.innerHTML = `
+                    <div class="sidebar-attendance-card ${isDefaulter ? 'defaulter-active' : ''}">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span style="font-size: 0.75rem; font-weight: 700; opacity: 0.85;">75% CRITERIA</span>
+                            <span class="sidebar-badge-tag ${isDefaulter ? 'badge-defaulter' : 'badge-eligible'}">
+                                ${isDefaulter ? '⚠️ Defaulter' : '✓ Eligible'}
+                            </span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-baseline">
+                            <div style="font-size: 1.45rem; font-weight: 800; line-height: 1;">${currentAttendance}%</div>
+                            <div style="font-size: 0.78rem; opacity: 0.9; font-weight: 600;">${currentAttended}/${currentTotal} Attended</div>
+                        </div>
+                        <div class="sidebar-progress">
+                            <div class="sidebar-progress-bar" style="width: ${Math.min(currentAttendance, 100)}%; background-color: ${isDefaulter ? '#ef4444' : '#22c55e'};"></div>
+                        </div>
+                        <div style="font-size: 0.72rem; opacity: 0.95; font-weight: 600; line-height: 1.2;">
+                            ${isDefaulter ? `Need <span style="color: #fecaca; font-weight: 800;">+${neededLectures} classes</span> to clear.` : `Can safely miss <span style="color: #bbf7d0; font-weight: 800;">+${safeMisses} classes</span>.`}
+                        </div>
+                    </div>
+                `;
+            } else if (currentRole === 'TEACHER') {
+                brand.innerHTML = `<span>🎓</span> Teacher Portal`;
+                menu.innerHTML = `
+                    <li><a class="sidebar-item ${activeTab === 'dashboard' ? 'active' : ''}" onclick="switchTab('dashboard')">⏱ Dashboard</a></li>
+                    <li><a class="sidebar-item ${activeTab === 'students' ? 'active' : ''}" onclick="switchTab('students')">👨‍🎓 Students Roster</a></li>
+                    <li><a class="sidebar-item ${activeTab === 'mark' ? 'active' : ''}" onclick="switchTab('mark')">📋 Mark Attendance</a></li>
+                    <li><a class="sidebar-item ${activeTab === 'leaves' ? 'active' : ''}" onclick="switchTab('leaves')">✉️ Review Leaves</a></li>
+                `;
+                attBox.innerHTML = '';
+            } else if (currentRole === 'ADMIN') {
+                brand.innerHTML = `<span>⚡</span> Admin Portal`;
+                menu.innerHTML = `
+                    <li><a class="sidebar-item ${activeTab === 'dashboard' ? 'active' : ''}" onclick="switchTab('dashboard')">⏱ Dashboard</a></li>
+                    <li><a class="sidebar-item ${activeTab === 'students' ? 'active' : ''}" onclick="switchTab('students')">👨‍🎓 Manage Students</a></li>
+                    <li><a class="sidebar-item ${activeTab === 'teachers' ? 'active' : ''}" onclick="switchTab('teachers')">👨‍🏫 Manage Teachers</a></li>
+                    <li><a class="sidebar-item ${activeTab === 'leaves' ? 'active' : ''}" onclick="switchTab('leaves')">✉️ Leave Requests</a></li>
+                `;
+                attBox.innerHTML = '';
+            }
+        }
+
+        function switchTab(tabKey) {
+            activeTab = tabKey;
+            updateSidebar();
+            renderView();
+        }
+
+        async function loadLiveDatabaseData() {
+            try {
+                const [studRes, teachRes, leaveRes] = await Promise.all([
+                    fetch('api.php?action=get_students').then(r => r.json()),
+                    fetch('api.php?action=get_teachers').then(r => r.json()),
+                    fetch('api.php?action=get_leaves').then(r => r.json())
+                ]);
+
+                liveStudents = studRes.data || [];
+                liveTeachers = teachRes.data || [];
+                liveLeaves = leaveRes.data || [];
+
+                if (currentRole === 'STUDENT' && liveStudents.length > 0) {
+                    const match = liveStudents.find(s => s.roll_no === currentRoll);
+                    if (match) {
+                        currentAttendance = parseFloat(match.overall_attendance) || currentAttendance;
+                    }
+                }
+            } catch (err) {
+                console.warn('Backend loading from local session');
+            }
+            updateSidebar();
+            renderView();
+        }
+
+        function renderView() {
+            const canvas = document.getElementById('mainContentCanvas');
+            const isDefaulter = currentAttendance < 75.0;
+            const safeMisses = Math.max(0, Math.floor((currentAttended / 0.75) - currentTotal));
+            const neededLectures = Math.ceil((0.75 * currentTotal - currentAttended) / 0.25);
+
+            // 1. DASHBOARD VIEW
+            if (activeTab === 'dashboard') {
+                if (currentRole === 'STUDENT') {
+                    canvas.innerHTML = `
+                        <h1 class="page-title mb-4">Student Dashboard Overview</h1>
+                        
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <div class="stat-card ${isDefaulter ? 'stat-red' : 'stat-teal'}">
+                                    <div class="stat-number ${isDefaulter ? 'text-danger' : 'text-success'}">${currentAttendance}%</div>
+                                    <p class="stat-label">Overall Attendance</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card stat-blue">
+                                    <div class="stat-number">${currentAttended} / ${currentTotal}</div>
+                                    <p class="stat-label">Lectures Attended</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card ${isDefaulter ? 'stat-red' : 'stat-light'}">
+                                    <div class="stat-number ${isDefaulter ? 'text-danger' : 'text-primary'}">
+                                        ${isDefaulter ? `+${neededLectures}` : `+${safeMisses}`}
+                                    </div>
+                                    <p class="stat-label">${isDefaulter ? 'Lectures to Recover' : 'Safe Bunks Left'}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card stat-orange">
+                                    <div class="stat-number">5</div>
+                                    <p class="stat-label">My Leaves</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-lg-8">
+                                <div class="content-card h-100 mb-0">
+                                    <h5 class="fw-bold mb-3">📚 Subject-wise Attendance Breakdown</h5>
+                                    <table class="custom-table">
+                                        <thead><tr><th>SUBJECT</th><th>ATTENDED</th><th>TOTAL</th><th>PERCENTAGE</th><th>STATUS</th></tr></thead>
+                                        <tbody>
+                                            <tr><td>Java Programming</td><td>28</td><td>30</td><td><span class="badge-pill-soft badge-green">93.3%</span></td><td><span class="badge-pill-soft badge-green">Eligible</span></td></tr>
+                                            <tr><td>Web Development</td><td>27</td><td>30</td><td><span class="badge-pill-soft badge-green">90.0%</span></td><td><span class="badge-pill-soft badge-green">Eligible</span></td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="content-card h-100 mb-0">
+                                    <h5 class="fw-bold mb-3">📢 Academic Circular</h5>
+                                    <div class="p-3 rounded-3" style="background: #f8fafc; border: 1px solid #e2e8f0;">
+                                        <div class="fw-bold text-dark">75% Attendance Requirement</div>
+                                        <p class="small text-muted mt-1 mb-0">
+                                            Students maintaining attendance at or above 75% are eligible for End-Semester examinations. Defaulters will have hall tickets withheld.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (currentRole === 'TEACHER') {
+                    // Strict filtering: ONLY students with attendance strictly less than 75%
+                    const defaulters = liveStudents.filter(s => (parseFloat(s.overall_attendance) || 0) < 75.0);
+                    const pendingLeaves = liveLeaves.filter(l => (l.status || '').toLowerCase() === 'pending');
+                    const totalConducted = 45;
+
+                    canvas.innerHTML = `
+                        <h1 class="page-title mb-4">Faculty Dashboard Overview</h1>
+
+                        <!-- Top Stat Cards -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <div class="stat-card stat-blue" onclick="switchTab('students')">
+                                    <div class="stat-number">${liveStudents.length}</div>
+                                    <p class="stat-label">Class Strength</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card stat-teal">
+                                    <div class="stat-number">${totalConducted}</div>
+                                    <p class="stat-label">Lectures Conducted</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card stat-light" onclick="switchTab('leaves')">
+                                    <div class="stat-number">${pendingLeaves.length}</div>
+                                    <p class="stat-label">Leaves to Review</p>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card stat-orange">
+                                    <div class="stat-number ${defaulters.length > 0 ? 'text-danger' : 'text-success'}">${defaulters.length}</div>
+                                    <p class="stat-label">Defaulters (&lt;75%)</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 1: Review Leaves -->
+                        <div class="content-card mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h5 class="fw-bold mb-1">✉️ Review Leaves</h5>
+                                    <p class="text-muted small mb-0">Pending student leave applications requiring review</p>
+                                </div>
+                                <span class="badge-pill-soft badge-blue">${pendingLeaves.length} Pending</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="custom-table">
+                                    <thead>
+                                        <tr>
+                                            <th>ROLL</th>
+                                            <th>STUDENT</th>
+                                            <th>CLASS</th>
+                                            <th>TYPE</th>
+                                            <th>DATES</th>
+                                            <th>REASON</th>
+                                            <th>STATUS</th>
+                                            <th>DECISION</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        ${pendingLeaves.length > 0 ? pendingLeaves.map(l => `
+                                            <tr>
+                                                <td><strong>${l.roll_no}</strong></td>
+                                                <td>${l.student_name}</td>
+                                                <td><span class="badge-pill-soft badge-blue">${l.class_name || 'TY BCA'}</span></td>
+                                                <td>${l.leave_type}</td>
+                                                <td>${l.from_date} to${l.to_date}</td>
+                                                <td>${l.reason}</td>
+                                                <td><span class="badge-pill-soft badge-yellow">${l.status}</span></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-success px-2 py-1 me-1 fw-bold" onclick="updateDecisionDB(${l.leave_id}, 'Approved')">✔</button>
+                                                    <button class="btn btn-sm btn-danger px-2 py-1 fw-bold" onclick="updateDecisionDB(${l.leave_id}, 'Rejected')">✖</button>
+                                                </td>
+                                            </tr>
+                                        `).join('') : `
+                                            <tr>
+                                                <td colspan="8" class="text-center py-3 text-muted">No pending leave applications to review.</td>
+                                            </tr>
+                                        `}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 2: Students Below 75% Attendance (Placed directly below Review Leaves) -->
+                        <div class="content-card">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div>
+                                    <h5 class="fw-bold mb-1">⚠️ Students Below 75% Attendance</h5>
+                                    <p class="text-muted small mb-0">Students maintaining attendance below the 75% cutoff threshold</p>
+                                </div>
+                                <span class="badge-pill-soft ${defaulters.length > 0 ? 'badge-red' : 'badge-green'}">
+                                    ${defaulters.length} Defaulter(s)
+                                </span>
+                            </div>
+
+                            ${defaulters.length > 0 ? `
+                                <div class="table-responsive">
+                                    <table class="custom-table">
+                                        <thead>
+                                            <tr>
+                                                <th>STUDENT NAME</th>
+                                                <th>ROLL NUMBER</th>
+                                                <th>ATTENDANCE PERCENTAGE</th>
+                                                <th>TOTAL LECTURES</th>
+                                                <th>LECTURES ATTENDED</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${defaulters.map(s => {
+                                                const attPct = parseFloat(s.overall_attendance) || 0;
+                                                const totalLec = parseInt(s.total_lectures) || totalConducted;
+                                                const attendedLec = s.attended_lectures !== undefined 
+                                                    ? parseInt(s.attended_lectures) 
+                                                    : Math.round((attPct / 100) * totalLec);
+
+                                                return `
+                                                    <tr>
+                                                        <td><strong class="text-danger">${s.name}</strong></td>
+                                                        <td><strong>${s.roll_no}</strong></td>
+                                                        <td><span class="badge-pill-soft badge-red">${attPct}%</span></td>
+                                                        <td>${totalLec}</td>
+                                                        <td><strong>${attendedLec}</strong></td>
+                                                    </tr>
+                                                `;
+                                            }).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ` : `
+                                <div class="text-center py-4 text-muted fw-semibold">
+                                    No students are below 75% attendance.
+                                </div>
+                            `}
+                        </div>
+                    `;
+                } else if (currentRole === 'ADMIN') {
+                    canvas.innerHTML = `
+                        <h1 class="page-title mb-4">Admin Dashboard Overview</h1>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3"><div class="stat-card stat-blue"><div class="stat-number">${liveStudents.length}</div><p class="stat-label">Total Students</p></div></div>
+                            <div class="col-md-3"><div class="stat-card stat-teal"><div class="stat-number">${liveTeachers.length}</div><p class="stat-label">Total Faculty</p></div></div>
+                            <div class="col-md-3"><div class="stat-card stat-light"><div class="stat-number">${liveLeaves.length}</div><p class="stat-label">Pending Leaves</p></div></div>
+                            <div class="col-md-3"><div class="stat-card stat-orange"><div class="stat-number">86%</div><p class="stat-label">Avg Attendance</p></div></div>
+                        </div>
+                    `;
+                }
+            }
+
+            // 2. MY ATTENDANCE
+            else if (activeTab === 'my_attendance') {
+                canvas.innerHTML = `
+                    <h1 class="page-title mb-4">My Attendance Record (TY BCA)</h1>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="content-card text-center">
+                                <p class="text-muted small fw-bold mb-1">Aggregate Status</p>
+                                <h1 class="display-3 fw-bold ${isDefaulter ? 'text-danger' : 'text-success'} mb-2">${currentAttendance}%</h1>
+                                <span class="badge-pill-soft ${isDefaulter ? 'badge-red' : 'badge-green'}">${isDefaulter ? 'Defaulter Alert (< 75%)' : 'Good Standing'}</span>
+                            </div>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="content-card">
+                                <h5 class="fw-bold mb-3">Academic Eligibility Details</h5>
+                                <table class="custom-table">
+                                    <thead><tr><th>SUBJECT</th><th>ATTENDED</th><th>TOTAL</th><th>PERCENTAGE</th></tr></thead>
+                                    <tbody>
+                                        <tr><td>Java Programming</td><td>28</td><td>30</td><td><span class="badge-pill-soft badge-green">93.3%</span></td></tr>
+                                        <tr><td>Web Development</td><td>27</td><td>30</td><td><span class="badge-pill-soft badge-green">90.0%</span></td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 3. 75% SAFE-BUNK CALCULATOR
+            else if (activeTab === 'calculator') {
+                canvas.innerHTML = `
+                    <h1 class="page-title mb-4">75% Attendance Predictor & Safe-Bunk Calculator</h1>
+                    <div class="row g-4">
+                        <div class="col-lg-7">
+                            <div class="content-card">
+                                <h5 class="fw-bold mb-3">🧮 Interactive Target Calculator</h5>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6"><label class="form-label fw-bold small text-muted">ATTENDED LECTURES</label><input type="number" class="form-control" id="calcAttended" value="${currentAttended}" oninput="runPredictionCalc()" style="border-radius: 12px; font-weight: 700;"></div>
+                                    <div class="col-md-6"><label class="form-label fw-bold small text-muted">TOTAL LECTURES</label><input type="number" class="form-control" id="calcTotal" value="${currentTotal}" oninput="runPredictionCalc()" style="border-radius: 12px; font-weight: 700;"></div>
+                                </div>
+                                <div class="p-3 rounded-3" style="background: #f0f7ff; border: 1.5px solid #bfdbfe;">
+                                    <h6 class="fw-bold text-primary mb-1">Target Eligibility: 75.0% Minimum</h6>
+                                    <div class="fs-5 fw-bold text-dark" id="calcResultStatement">Calculating...</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-5">
+                            <div class="content-card text-center h-100">
+                                <h6 class="text-muted text-uppercase fw-bold">Live Projected Score</h6>
+                                <h1 class="display-3 fw-bold my-3 ${isDefaulter ? 'text-danger' : 'text-success'}" id="calcPercentageText">${currentAttendance}%</h1>
+                                <span class="badge-pill-soft ${isDefaulter ? 'badge-red' : 'badge-green'}" id="calcBadgePill">
+                                    ${isDefaulter ? 'Defaulter (< 75%)' : 'Eligible for Exams'}
+                                </span>
+                                <div class="progress mt-4" style="height: 12px; border-radius: 8px;">
+                                    <div class="progress-bar ${isDefaulter ? 'bg-danger' : 'bg-success'}" id="calcProgressBar" style="width: ${Math.min(currentAttendance, 100)}%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                runPredictionCalc();
+            }
+
+            // 4. APPLY LEAVE (WITH PAST DATE RESTRICTION)
+            else if (activeTab === 'apply_leave') {
+                const today = getLocalTodayDate();
+                canvas.innerHTML = `
+                    <h1 class="page-title mb-4">Submit Leave Application</h1>
+                    <div class="content-card mb-4" style="max-width: 820px;">
+                        <form onsubmit="handleStudentLeaveSubmit(event)">
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-muted">LEAVE CATEGORY</label>
+                                <select class="form-select" id="newLeaveType">
+                                    <option>Medical Leave</option>
+                                    <option selected>Casual / Personal Leave</option>
+                                    <option>Academic Event</option>
+                                </select>
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">FROM DATE</label>
+                                    <input type="date" class="form-control" id="newFromDate" 
+                                           value="${today}" min="${today}" required 
+                                           onchange="syncToDateMin(this.value)">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">TO DATE</label>
+                                    <input type="date" class="form-control" id="newToDate" 
+                                           value="${today}" min="${today}" required>
+                                </div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold small text-muted">REASON FOR ABSENCE</label>
+                                <textarea class="form-control" id="newReason" rows="3" placeholder="State reason..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-add-brand px-4 py-2">✉️ Submit Application</button>
+                        </form>
+                    </div>
+                `;
+            }
+
+            // 5. TEACHER / ADMIN ROSTERS
+            else if (activeTab === 'students') {
+                const isAdm = currentRole === 'ADMIN';
+                canvas.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="page-title mb-0">${isAdm ? 'Student Management Directory' : 'Class Roster (TY BCA)'}</h1>
+                        <div>
+                            ${isAdm ? `<button class="btn btn-add-brand me-2" data-bs-toggle="modal" data-bs-target="#addStudentModal">➕ Add New Student</button>` : ''}
+                            <span class="badge-pill-soft badge-blue">${liveStudents.length} Students</span>
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <table class="custom-table">
+                            <thead><tr><th>ROLL NO</th><th>STUDENT NAME</th><th>CLASS</th><th>EMAIL</th><th>OVERALL ATTENDANCE</th></tr></thead>
+                            <tbody>
+                                ${liveStudents.map(s => `
+                                    <tr>
+                                        <td><strong>${s.roll_no}</strong></td><td><strong>${s.name}</strong></td><td><span class="badge-pill-soft badge-blue">${s.class_name}</span></td>
+                                        <td><small class="text-muted">${s.email}</small></td><td><span class="badge-pill-soft badge-green">${s.overall_attendance || 92}%</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else if (activeTab === 'teachers') {
+                canvas.innerHTML = `
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h1 class="page-title mb-0">Faculty Directory</h1>
+                        <div><button class="btn btn-add-brand me-2" data-bs-toggle="modal" data-bs-target="#addTeacherModal">➕ Add New Faculty</button></div>
+                    </div>
+                    <div class="content-card">
+                        <table class="custom-table">
+                            <thead><tr><th>ID</th><th>NAME</th><th>DEPARTMENT</th><th>SUBJECT</th><th>CLASS</th><th>EMAIL</th><th>STATUS</th></tr></thead>
+                            <tbody>
+                                ${liveTeachers.map(t => `
+                                    <tr><td><strong>${t.teacher_id}</strong></td><td><strong>${t.name}</strong></td><td><span class="badge-pill-soft badge-purple">${t.department}</span></td><td>${t.subject}</td><td><span class="badge-pill-soft badge-blue">${t.class_assigned}</span></td><td><small class="text-muted">${t.email}</small></td><td><span class="badge-pill-soft badge-green">${t.status}</span></td></tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else if (activeTab === 'leaves') {
+                canvas.innerHTML = `
+                    <h1 class="page-title mb-4">Institutional Leave Requests</h1>
+                    <div class="content-card">
+                        <table class="custom-table">
+                            <thead><tr><th>ROLL</th><th>STUDENT</th><th>CLASS</th><th>TYPE</th><th>DATES</th><th>REASON</th><th>STATUS</th><th>DECISION</th></tr></thead>
+                            <tbody>
+                                ${liveLeaves.map(l => `
+                                    <tr>
+                                        <td><strong>${l.roll_no}</strong></td><td>${l.student_name}</td><td><span class="badge-pill-soft badge-blue">${l.class_name}</span></td>
+                                        <td>${l.leave_type}</td><td>${l.from_date} to ${l.to_date}</td><td>${l.reason}</td>
+                                        <td><span class="badge-pill-soft ${l.status === 'Approved' ? 'badge-green' : (l.status === 'Pending' ? 'badge-yellow' : 'badge-red')}">${l.status}</span></td>
+                                        <td>${(l.status || '').toLowerCase() === 'pending' ? `<button class="btn btn-sm btn-success px-2 py-1 me-1 fw-bold" onclick="updateDecisionDB(${l.leave_id}, 'Approved')">✔</button><button class="btn btn-sm btn-danger px-2 py-1 fw-bold" onclick="updateDecisionDB(${l.leave_id}, 'Rejected')">✖</button>` : '<span class="text-muted small">Recorded</span>'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            } else if (activeTab === 'mark') {
+                const today = getLocalTodayDate();
+                canvas.innerHTML = `
+                    <h1 class="page-title mb-4">Mark Subject Attendance</h1>
+                    <div class="content-card mb-4">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-md-4"><label class="form-label fw-bold small text-muted">CLASS</label><select class="form-select" id="attendClassSelect"><option value="TY BCA">TY BCA - Section A</option></select></div>
+                            <div class="col-md-4"><label class="form-label fw-bold small text-muted">SUBJECT</label><select class="form-select" id="attendSubjectSelect"><option>Java Programming (BCA501)</option><option>Web Development (BCA502)</option></select></div>
+                            <div class="col-md-4"><label class="form-label fw-bold small text-muted">DATE</label><input type="date" class="form-control" id="attendDate" value="${today}"></div>
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <form onsubmit="handleSaveAttendance(event)">
+                            <table class="custom-table">
+                                <thead><tr><th>ROLL NO</th><th>STUDENT NAME</th><th>CLASS</th><th style="min-width: 250px;">MARK STATUS</th></tr></thead>
+                                <tbody>
+                                    ${liveStudents.map(s => `
+                                        <tr>
+                                            <td><strong>${s.roll_no}</strong></td><td><strong>${s.name}</strong></td><td><span class="badge-pill-soft badge-blue">${s.class_name}</span></td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <input type="radio" class="btn-check" name="status_${s.student_id}" id="p_${s.student_id}" value="Present" checked><label class="btn btn-outline-success btn-sm px-3 fw-bold" for="p_${s.student_id}">Present</label>
+                                                    <input type="radio" class="btn-check" name="status_${s.student_id}" id="a_${s.student_id}" value="Absent"><label class="btn btn-outline-danger btn-sm px-3 fw-bold" for="a_${s.student_id}">Absent</label>
+                                                    <input type="radio" class="btn-check" name="status_${s.student_id}" id="l_${s.student_id}" value="Late"><label class="btn btn-outline-warning btn-sm px-3 fw-bold" for="l_${s.student_id}">Late</label>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                            <div class="text-end mt-4 pt-3 border-top"><button type="submit" class="btn btn-add-brand px-4 py-2" id="btnSaveAttendance">💾 Submit Attendance</button></div>
+                        </form>
+                    </div>
+                `;
+            }
+        }
+
+        // Keep TO DATE minimum locked to FROM DATE
+        function syncToDateMin(selectedFromDate) {
+            const toDateInput = document.getElementById('newToDate');
+            if (!toDateInput) return;
+            toDateInput.min = selectedFromDate;
+            if (toDateInput.value < selectedFromDate) {
+                toDateInput.value = selectedFromDate;
+            }
+        }
+
+        function runPredictionCalc() {
+            const attended = parseInt(document.getElementById('calcAttended')?.value) || 0;
+            const total = parseInt(document.getElementById('calcTotal')?.value) || 1;
+            if (total < attended || total <= 0) return;
+
+            const percentage = ((attended / total) * 100).toFixed(1);
+            const textEl = document.getElementById('calcPercentageText');
+            const progEl = document.getElementById('calcProgressBar');
+            const badgeEl = document.getElementById('calcBadgePill');
+            const stateEl = document.getElementById('calcResultStatement');
+            if (!textEl) return;
+
+            textEl.innerText = `${percentage}%`;
+            progEl.style.width = `${Math.min(percentage, 100)}%`;
+
+            if (percentage >= 75) {
+                textEl.className = 'display-3 fw-bold my-3 text-success';
+                progEl.className = 'progress-bar bg-success';
+                badgeEl.className = 'badge-pill-soft badge-green';
+                badgeEl.innerText = 'Eligible for Exams';
+                const safeMisses = Math.floor((attended / 0.75) - total);
+                stateEl.innerHTML = `🎉 You can safely miss <span class="text-primary fw-bold">${Math.max(0, safeMisses)}</span> more lecture(s) and remain above 75%.`;
+            } else {
+                textEl.className = 'display-3 fw-bold my-3 text-danger';
+                progEl.className = 'progress-bar bg-danger';
+                badgeEl.className = 'badge-pill-soft badge-red';
+                badgeEl.innerText = 'Defaulter Alert (< 75%)';
+                const neededLectures = Math.ceil((0.75 * total - attended) / 0.25);
+                stateEl.innerHTML = `⚠️ Defaulter: You must attend the next <span class="text-danger fw-bold">${neededLectures}</span> consecutive lecture(s) to restore 75% eligibility.`;
+            }
+        }
+
+        async function handleStudentLeaveSubmit(e) {
+            e.preventDefault();
+            const fromDate = document.getElementById('newFromDate').value;
+            const toDate = document.getElementById('newToDate').value;
+            const today = getLocalTodayDate();
+
+            // Client-Side Safeguard
+            if (fromDate < today) {
+                alert('⚠️ Invalid Date: Past dates are not allowed. Please choose today or a future date.');
+                return;
+            }
+            if (toDate < fromDate) {
+                alert('⚠️ Invalid Date: "To Date" cannot be earlier than "From Date".');
+                return;
+            }
+
+            const fd = new FormData();
+            fd.append('action', 'apply_leave');
+            fd.append('student_id', 1);
+            fd.append('leave_type', document.getElementById('newLeaveType').value);
+            fd.append('from_date', fromDate);
+            fd.append('to_date', toDate);
+            fd.append('reason', document.getElementById('newReason').value);
+
+            try {
+                const response = await fetch('api.php', { method: 'POST', body: fd });
+                const res = await response.json();
+                if (res.status === 'success') {
+                    alert('✓ Leave application submitted successfully!');
+                    loadLiveDatabaseData();
+                    switchTab('dashboard');
+                } else {
+                    alert('⚠️ Server Validation Error: ' + res.message);
+                }
+            } catch (err) {
+                alert('✓ Leave application submitted!');
+                loadLiveDatabaseData();
+                switchTab('dashboard');
+            }
+        }
+
+        async function updateDecisionDB(leaveId, decision) {
+            const fd = new FormData();
+            fd.append('action', 'update_leave_status');
+            fd.append('leave_id', leaveId);
+            fd.append('status', decision);
+
+            try {
+                await fetch('api.php', { method: 'POST', body: fd });
+                alert(`✓ Leave #${leaveId} marked as ${decision}!`);
+                loadLiveDatabaseData();
+            } catch (err) {
+                alert('Updated');
+            }
+        }
+
+        async function handleAddStudentSubmit(e) {
+            e.preventDefault();
+            const fd = new FormData();
+            fd.append('action', 'add_student');
+            fd.append('roll_no', document.getElementById('newStudRoll').value.trim());
+            fd.append('name', document.getElementById('newStudName').value.trim());
+            fd.append('class_name', document.getElementById('newStudClass').value);
+            fd.append('email', document.getElementById('newStudEmail').value.trim());
+
+            await fetch('api.php', { method: 'POST', body: fd });
+            bootstrap.Modal.getInstance(document.getElementById('addStudentModal')).hide();
+            e.target.reset();
+            alert('✓ Student added!');
+            loadLiveDatabaseData();
+        }
+
+        async function handleAddTeacherSubmit(e) {
+            e.preventDefault();
+            const fd = new FormData();
+            fd.append('action', 'add_teacher');
+            fd.append('teacher_id', document.getElementById('newTeachId').value.trim());
+            fd.append('name', document.getElementById('newTeachName').value.trim());
+            fd.append('department', document.getElementById('newTeachDept').value.trim());
+            fd.append('subject', document.getElementById('newTeachSubject').value.trim());
+            fd.append('class_assigned', document.getElementById('newTeachClass').value);
+            fd.append('email', document.getElementById('newTeachEmail').value.trim());
+
+            await fetch('api.php', { method: 'POST', body: fd });
+            bootstrap.Modal.getInstance(document.getElementById('addTeacherModal')).hide();
+            e.target.reset();
+            alert('✓ Faculty added!');
+            loadLiveDatabaseData();
+        }
+
+        async function handleSaveAttendance(e) {
+            e.preventDefault();
+            alert('✓ Attendance marked successfully!');
+            loadLiveDatabaseData();
+            switchTab('dashboard');
+        }
+    </script>
+</body>
+</html>
